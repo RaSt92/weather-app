@@ -4,7 +4,7 @@ window.addEventListener('load', () => {
     let tempDescription = document.querySelector('.temp-description');
     let tempDegree = document.querySelector('.temp-degree');
     let locationTimezone = document.querySelector('.location-timezone');
-    let temperatureSection = documents.querySelector('.degree-section');
+    let temperatureSection = document.querySelector('.degree-section');
     const tempSpan = document.querySelector('.degree-section span');
 
     if(navigator.geolocation){
@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
             long = position.coords.longitude;
             lat = position.coords.latitude;
             const proxy = 'https://cors-anywhere.herokuapp.com/';
-            const api = `${proxy}https://api.darksky.net/forecast/290def109a7004d41ad214c3eff2bbee/${lat},${long}`;
+            const api = `${proxy}https://api.darksky.net/forecast/2234163e578055db9bc385d7f191730a/${lat},${long}`;
             
             fetch(api)
             .then(response => {
@@ -20,29 +20,35 @@ window.addEventListener('load', () => {
             })
             .then(data => {
                 console.log(data)
-                const {temp, summary, icon} = data.currently;
-                tempDegree.textContent = temp;
+                const {temperature, summary, icon} = data.currently;
+                tempDegree.textContent = temperature;
                 tempDescription.textContent = summary;
                 locationTimezone.textContent = data.timezone;
+                //temp formula
 
+                let celsius = (temperature - 32) * (5/9);
+
+                
                 setIcons(icon, document.querySelector('.icon'))
 
                 //change temp to Celsius/Fahrenheit
 
-                temperatureSection.addEventListener('click', () => {
+                tempSpan.addEventListener('click', () => {
                     if(tempSpan.textContent === 'F'){
-                        tempSpan.textContent = 'C'
+                        tempSpan.textContent = 'C';
+                        tempDegree.textContent = Math.floor(celsius);
                     }else{
-                        tempSpan.textContent = "F"
+                        tempSpan.textContent = "F";
+                        tempDegree.textContent = temperature;
                     }
                     
-                })
-            })
+                });
+            });
         });
         
     }
     function setIcons(icon, iconID){
-        const skycons = new Skycons({color: grey});
+        const skycons = new Skycons({color: 'white'});
         const currentIcon =  icon.replace(/-/g, '_').toUpperCase();
         skycons.play();
         return  skycons.set(iconID, Skycons[currentIcon]);
